@@ -1,16 +1,25 @@
-from fastapi import FastAPI, HTTPException, UploadFile
+from enum import Enum
+
+from fastapi import FastAPI, HTTPException, UploadFile, APIRouter
 from fastapi.responses import FileResponse
 from pathlib import Path
 import os
 
 app = FastAPI()
 
+router = APIRouter(prefix="/cdn", tags=["CDN"])
+
 # Configuration
 STATIC_DIR = Path("static")
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 
-def validate_file_path(file_path: str) -> Path:
-    target_path = (STATIC_DIR / file_path).resolve()
+class FilePathType(Enum):
+    SUPERMARKET = "supermarket"
+    PRODUCT = "product"
+    USER = "user"
+
+def validate_file_path(file_type: FilePathType, path: str) -> Path:
+    target_path = (STATIC_DIR / file_type.name / path).resolve()
 
     # Prevent directory traversal attacks
     if not target_path.is_relative_to(STATIC_DIR.resolve()):
@@ -18,25 +27,24 @@ def validate_file_path(file_path: str) -> Path:
 
     return target_path
 
-@app.put("/files/{file_path:path}")
-async def upload_file(file_path: str, file: UploadFile):
+@router.post("/{file_type}/{path}")
+async def upload_file(file_type: FilePathType, path: str, file: UploadFile) -> dict:
     try:
-        target_path = validate_file_path(file_path)
+        target_path = validate_file_path(file_type, path)
         target_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Save file
         with target_path.open("wb") as buffer:
             content = await file.read()
             buffer.write(content)
 
-        return {"message": "File uploaded successfully", "path": file_path}
+        return {"message": "File uploaded successfully", "path": f"cdn/{file_type}/{path}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/files/{file_path:path}")
-async def get_file(file_path: str):
+@router.get("/{file_type}/{path}")
+async def get_file(file_type: FilePathType, path: str) -> FileResponse:
     try:
-        target_path = validate_file_path(file_path)
+        target_path = validate_file_path(file_type, path)
 
         if not target_path.exists():
             raise HTTPException(status_code=404, detail="File not found")
@@ -45,10 +53,10 @@ async def get_file(file_path: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.delete("/files/{file_path:path}")
-async def delete_file(file_path: str):
+@router.delete("/{file_type}/{path}")
+async def delete_file(file_type: FilePathType, path: str) -> dict:
     try:
-        target_path = validate_file_path(file_path)
+        target_path = validate_file_path(file_type, path)
 
         if not target_path.exists():
             raise HTTPException(status_code=404, detail="File not found")
@@ -64,6 +72,8 @@ async def delete_file(file_path: str):
         return {"message": "File deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+app.include_router(router)
 
 if __name__ == "__main__":
     import uvicorn

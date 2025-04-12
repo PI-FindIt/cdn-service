@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SonarLintProjectSettings">
     <option name="bindingEnabled" value="true" />
-    <option name="projectKey" value="PI-FindIt_user-service_dc35c115-26fe-4d3f-8ac3-9c31db9400db" />
+    <option name="projectKey" value="PI-FindIt_cdn-service_0b510088-c060-4968-a6f7-5a6f36d3f732" />
     <option name="serverId" value="https://sonarqube.findit-app.pt" />
   </component>
 </project>
