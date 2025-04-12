@@ -5,7 +5,7 @@ ENV ENV production
 
 WORKDIR /cdn-service
 
-RUN pip install --no-cache poetry
+RUN pip install --no-cache poetry python-multipart
 
 COPY . .
 RUN poetry install --no-dev

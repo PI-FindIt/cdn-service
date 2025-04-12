@@ -7,7 +7,7 @@ ENV ENV development
 
 WORKDIR /cdn-service
 
-RUN pip install --no-cache poetry
+RUN pip install --no-cache poetry python-multipart
 
 COPY poetry.lock pyproject.toml ./
 RUN poetry install --with dev

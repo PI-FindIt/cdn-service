@@ -13,10 +13,12 @@ router = APIRouter(prefix="/cdn", tags=["CDN"])
 STATIC_DIR = Path("static")
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 
+
 class FilePathType(Enum):
     SUPERMARKET = "supermarket"
     PRODUCT = "product"
     USER = "user"
+
 
 def validate_file_path(file_type: FilePathType, path: str) -> Path:
     target_path = (STATIC_DIR / file_type.name / path).resolve()
@@ -26,6 +28,7 @@ def validate_file_path(file_type: FilePathType, path: str) -> Path:
         raise HTTPException(status_code=400, detail="Invalid file path")
 
     return target_path
+
 
 @router.post("/{file_type}/{path}")
 async def upload_file(file_type: FilePathType, path: str, file: UploadFile) -> dict:
@@ -37,9 +40,13 @@ async def upload_file(file_type: FilePathType, path: str, file: UploadFile) -> d
             content = await file.read()
             buffer.write(content)
 
-        return {"message": "File uploaded successfully", "path": f"cdn/{file_type}/{path}"}
+        return {
+            "message": "File uploaded successfully",
+            "path": f"cdn/{file_type}/{path}",
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/{file_type}/{path}")
 async def get_file(file_type: FilePathType, path: str) -> FileResponse:
@@ -52,6 +59,7 @@ async def get_file(file_type: FilePathType, path: str) -> FileResponse:
         return FileResponse(target_path)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.delete("/{file_type}/{path}")
 async def delete_file(file_type: FilePathType, path: str) -> dict:
@@ -73,8 +81,5 @@ async def delete_file(file_type: FilePathType, path: str) -> dict:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-app.include_router(router)
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+app.include_router(router)
