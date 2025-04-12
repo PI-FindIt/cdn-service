@@ -1,0 +1,22 @@
+services:
+  cdn-service:
+    build:
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - cdn-data:/cdn-service/static
+    tty: true
+    networks:
+      - cdn-service
+      - backend
+      - analytics
+    labels:
+      - "traefik.http.routers.cdn-service.rule=HostRegexp(`api\\..+`) && PathPrefix(`/cdn`)"
+
+
+networks:
+  cdn-service:
+
+volumes:
+  cdn-data:

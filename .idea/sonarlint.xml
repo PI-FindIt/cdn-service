@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SonarLintProjectSettings">
+    <option name="bindingEnabled" value="true" />
+    <option name="projectKey" value="PI-FindIt_user-service_dc35c115-26fe-4d3f-8ac3-9c31db9400db" />
+    <option name="serverId" value="https://sonarqube.findit-app.pt" />
+  </component>
+</project>
