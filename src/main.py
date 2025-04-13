@@ -15,13 +15,14 @@ STATIC_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class FilePathType(Enum):
-    SUPERMARKET = "supermarket"
+    BRAND = "brand"
     PRODUCT = "product"
+    SUPERMARKET = "supermarket"
     USER = "user"
 
 
 def validate_file_path(file_type: FilePathType, path: str) -> Path:
-    target_path = (STATIC_DIR / file_type.name / path).resolve()
+    target_path = (STATIC_DIR / file_type.value / path).resolve()
 
     # Prevent directory traversal attacks
     if not target_path.is_relative_to(STATIC_DIR.resolve()):
@@ -30,7 +31,7 @@ def validate_file_path(file_type: FilePathType, path: str) -> Path:
     return target_path
 
 
-@router.post("/{file_type}/{path}")
+@router.post("/{file_type}/{path:path}")
 async def upload_file(file_type: FilePathType, path: str, file: UploadFile) -> dict:
     try:
         target_path = validate_file_path(file_type, path)
@@ -48,7 +49,7 @@ async def upload_file(file_type: FilePathType, path: str, file: UploadFile) -> d
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{file_type}/{path}")
+@router.get("/{file_type}/{path:path}")
 async def get_file(file_type: FilePathType, path: str) -> FileResponse:
     try:
         target_path = validate_file_path(file_type, path)
@@ -57,11 +58,13 @@ async def get_file(file_type: FilePathType, path: str) -> FileResponse:
             raise HTTPException(status_code=404, detail="File not found")
 
         return FileResponse(target_path)
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.delete("/{file_type}/{path}")
+@router.delete("/{file_type}/{path:path}")
 async def delete_file(file_type: FilePathType, path: str) -> dict:
     try:
         target_path = validate_file_path(file_type, path)
@@ -78,6 +81,8 @@ async def delete_file(file_type: FilePathType, path: str) -> dict:
             current_dir = current_dir.parent
 
         return {"message": "File deleted successfully"}
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
