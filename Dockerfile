@@ -7,7 +7,7 @@ ENV ENV development
 
 WORKDIR /cdn-service
 
-RUN pip install --no-cache uv python-multipart
+RUN pip uninstall multipart && pip install --no-cache uv python-multipart
 
 COPY uv.lock pyproject.toml ./
 RUN uv sync --frozen
