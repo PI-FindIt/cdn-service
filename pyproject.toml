@@ -16,8 +16,8 @@ dependencies = [
     "opentelemetry-sdk (>=1.31.0,<2.0.0)",
     "opentelemetry-exporter-otlp (>=1.31.0,<2.0.0)",
     "pydantic (>=2.11.3,<3.0.0)",
-    "multipart (>=1.2.1,<2.0.0)",
     "gunicorn>=23.0.0",
+    "python-multipart>=0.0.20",
 ]
 
 [dependency-groups]
