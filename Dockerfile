@@ -1,16 +1,16 @@
-FROM python:3.13-alpine
+FROM ghcr.io/astral-sh/uv:python3.13-alpine
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV POETRY_VIRTUALENVS_CREATE false
-ENV POETRY_VIRTUALENVS_IN_PROJECT false
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
 ENV ENV development
 
 WORKDIR /cdn-service
 
-RUN pip install --no-cache poetry python-multipart
+RUN pip install --no-cache uv python-multipart
 
-COPY poetry.lock pyproject.toml ./
-RUN poetry install --with dev
+COPY uv.lock pyproject.toml ./
+RUN uv sync --frozen
 
 EXPOSE 8000
 CMD [ "/cdn-service/entrypoint.sh" ]
