@@ -5,6 +5,8 @@ ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV ENV development
 
+ENV PATH="/cdn-service/.venv/bin:$PATH"
+
 WORKDIR /cdn-service
 
 RUN pip uninstall multipart && pip install --no-cache uv python-multipart
