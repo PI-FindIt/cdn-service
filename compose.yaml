@@ -15,7 +15,7 @@ services:
       - backend
       - analytics
     labels:
-      - "traefik.http.routers.cdn-service.rule=HostRegexp(`^(?:\\p{L}+|(\\p{L}+\\.\\p{L}{2,3})|((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4})$`) && PathPrefix(`/cdn`)"
+      - "traefik.http.routers.cdn-service.rule=HostRegexp(`^(?:\\p{L}+|(\\p{L}+\\.\\p{L}{2,3})|((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}|.+\\.tail\\d+\\.ts\\.net)$`) && PathPrefix(`/cdn`)"
 
 networks:
   cdn-service:
